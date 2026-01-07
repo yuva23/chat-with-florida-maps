@@ -1,0 +1,11 @@
+{
+  "intersect": {},
+  "buffer_intersection": {
+    "parameters": ["buffer_meters"]
+  },
+  "clip": {},
+  "near": {
+    "parameters": ["distance_meters"]
+  },
+  "change_detection": {}
+}

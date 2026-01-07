@@ -1,0 +1,27 @@
+{
+  "rivers": {
+    "description": "Major rivers and streams in Florida",
+    "keywords": ["river", "stream", "canal"],
+    "type": "vector"
+  },
+  "waterbodies": {
+    "description": "Lakes and surface water bodies",
+    "keywords": ["lake", "waterbody", "pond"],
+    "type": "vector"
+  },
+  "wetlands": {
+    "description": "Wetlands and marsh areas",
+    "keywords": ["wetland", "marsh", "swamp"],
+    "type": "vector"
+  },
+  "flood_zones": {
+    "description": "Flood hazard and floodplain zones",
+    "keywords": ["flood", "floodplain", "fema"],
+    "type": "vector"
+  },
+  "counties": {
+    "description": "Florida county boundaries",
+    "keywords": ["county"],
+    "type": "vector"
+  }
+}
