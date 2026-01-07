@@ -1,0 +1,5 @@
+{
+  "layers": ["rivers", "waterbodies"],
+  "operation": "visualize",
+  "location": "Florida"
+}
