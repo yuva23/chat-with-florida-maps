@@ -2,15 +2,11 @@ import requests
 import json
 import os
 
-# -----------------------------
-# Output folder
-# -----------------------------
+
 OUTPUT_DIR = "data"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-# -----------------------------
-# VERIFIED MapDirect layers
-# -----------------------------
+
 MAPDIRECT_LAYERS = {
     "counties": {
         "url": "https://ca.dep.state.fl.us/arcgis/rest/services/Map_Direct/Boundaries/MapServer/1"

@@ -9,9 +9,6 @@ CORS(app)
 
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-# ---------------------------------------------------
-# MapDirect Layer Catalog (YOUR URLs)
-# ---------------------------------------------------
 LAYER_CATALOG = {
     "counties": {
         "type": "mapserver",
@@ -27,9 +24,7 @@ LAYER_CATALOG = {
     }
 }
 
-# ---------------------------------------------------
-# Location → Map Zoom presets
-# ---------------------------------------------------
+
 LOCATION_ZOOMS = {
     "florida": { "center": [27.8, -81.7], "zoom": 7 },
     "orlando": { "center": [28.5383, -81.3792], "zoom": 10 },
@@ -37,9 +32,7 @@ LOCATION_ZOOMS = {
     "tampa": { "center": [27.9506, -82.4572], "zoom": 10 }
 }
 
-# ---------------------------------------------------
-# GENERAL GIS ASSISTANT (unchanged)
-# ---------------------------------------------------
+
 @app.route("/ask-gis", methods=["POST"])
 def ask_gis():
     q = request.json.get("question")
@@ -56,9 +49,7 @@ def ask_gis():
     })
 
 
-# ---------------------------------------------------
-# MAP COMMANDS (Intent Driven)
-# ---------------------------------------------------
+
 @app.route("/map-command", methods=["POST"])
 def map_command():
     q = request.json.get("question")
