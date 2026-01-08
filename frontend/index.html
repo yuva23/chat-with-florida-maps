@@ -1,72 +1,180 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <title>Chat with Florida Maps by Yuva</title>
+<meta charset="UTF-8" />
+<title>Chat with Florida Maps</title>
 
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-  />
+<!-- Leaflet -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-  <style>
-    body { margin: 0; font-family: Arial, sans-serif; }
-    #map { height: 100vh; width: 100vw; }
-    .title {
-      position: absolute;
-      top: 10px;
-      left: 50px;
-      background: white;
-      padding: 10px 14px;
-      z-index: 1000;
-      font-weight: bold;
-      border-radius: 6px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-    }
-  </style>
+<!-- Esri Leaflet -->
+<script src="https://unpkg.com/esri-leaflet"></script>
+
+<style>
+  body {
+    margin: 0;
+    height: 100vh;
+    display: grid;
+    grid-template-columns: 360px 1fr 360px;
+    background: #020617;
+    color: white;
+    font-family: Arial, sans-serif;
+  }
+
+  .panel {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: linear-gradient(180deg, #0b1220, #020617);
+  }
+
+  #map {
+    height: 100vh;
+  }
+
+  h2, h3 {
+    margin: 0;
+  }
+
+  input, button {
+    padding: 10px;
+    border-radius: 6px;
+    border: none;
+    font-size: 14px;
+  }
+
+  button {
+    background: #38bdf8;
+    color: black;
+    font-weight: bold;
+    cursor: pointer;
+  }
+
+  pre {
+    background: #020617;
+    padding: 10px;
+    border-radius: 6px;
+    flex: 1;
+    overflow-y: auto;
+    font-size: 13px;
+  }
+
+  footer {
+    font-size: 11px;
+    opacity: 0.75;
+    margin-top: auto;
+  }
+</style>
 </head>
 
 <body>
-  <div class="title">🧠 Chat with Florida Maps by Yuva</div>
-  <div id="map"></div>
 
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<!-- LEFT: General GIS Assistant -->
+<div class="panel">
+  <h2>Chat with Florida Maps</h2>
+  <small>General GIS Assistant</small>
 
-  <script>
-    const map = L.map("map").setView([27.8, -81.7], 6);
+  <input id="gisQuestion" placeholder="Ask a GIS question..." />
+  <button onclick="askGIS()">Ask GIS</button>
 
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution: "© OpenStreetMap contributors"
-    }).addTo(map);
+  <strong>Response</strong>
+  <pre id="gisResponse">(waiting...)</pre>
 
-    async function loadIntentAndLayers() {
-      const intent = await fetch("/backend/intent.json").then(r => r.json());
+  <footer>
+    Developed by <b>Yuvakiran Idamakanti</b><br/>
+    Senior IT Business Consultant – GIS & Enterprise Systems<br/>
+    Florida Department of Environmental Protection (FDEP)
+  </footer>
+</div>
 
-      const layerFiles = {
-        rivers: "/data/rivers.geojson",
-        counties: "/data/counties.geojson",
-        waterbodies: "/data/waterbodies.geojson"
-      };
+<!-- CENTER: MAP -->
+<div id="map"></div>
 
-      for (const layer of intent.layers) {
-        if (!layerFiles[layer]) continue;
+<!-- RIGHT: Map Commands -->
+<div class="panel">
+  <h3>Map Commands</h3>
+  <small>Intent-Driven GIS (MapDirect)</small>
 
-        const geojson = await fetch(layerFiles[layer]).then(r => r.json());
+  <input id="mapQuestion" placeholder="Show rivers near Orlando" />
+  <button onclick="runMapCommand()">Run Map Command</button>
 
-        L.geoJSON(geojson, {
-          style: {
-            color:
-              layer === "rivers" ? "blue" :
-              layer === "counties" ? "green" :
-              "purple",
-            weight: 2,
-            fillOpacity: 0.3
-          }
-        }).addTo(map);
-      }
+  <strong>Parsed Intent</strong>
+  <pre id="mapResponse">(waiting...)</pre>
+</div>
+
+<script>
+/* ===============================
+   CONFIG
+================================ */
+const BACKEND_URL = "https://crispy-computing-machine-xqrgpxj57pjc9qvp-5000.app.github.dev/";
+
+/* ===============================
+   MAP SETUP
+================================ */
+const map = L.map("map").setView([27.8, -81.7], 7);
+
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  attribution: "© OpenStreetMap"
+}).addTo(map);
+
+let activeLayer = null;
+
+/* ===============================
+   GENERAL GIS ASSISTANT
+================================ */
+function askGIS() {
+  const q = document.getElementById("gisQuestion").value;
+  const box = document.getElementById("gisResponse");
+  box.textContent = "Thinking...";
+
+  fetch(`${BACKEND_URL}/ask-gis`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ question: q })
+  })
+  .then(res => res.json())
+  .then(data => {
+    box.textContent = data.answer || "No response";
+  })
+  .catch(err => {
+    box.textContent = "Error: " + err;
+  });
+}
+
+/* ===============================
+   MAP COMMANDS
+================================ */
+function runMapCommand() {
+  const q = document.getElementById("mapQuestion").value;
+  const box = document.getElementById("mapResponse");
+  box.textContent = "Processing...";
+
+  fetch(`${BACKEND_URL}/map-command`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ question: q })
+  })
+  .then(res => res.json())
+  .then(data => {
+    box.textContent = JSON.stringify(data.intent, null, 2);
+
+    if (activeLayer) {
+      map.removeLayer(activeLayer);
     }
 
-    loadIntentAndLayers();
-  </script>
+    activeLayer = L.esri.featureLayer({
+      url: data.layer.url
+    }).addTo(map);
+
+    map.setView(data.zoom.center, data.zoom.zoom);
+  })
+  .catch(err => {
+    box.textContent = "Map backend error";
+  });
+}
+</script>
+
 </body>
 </html>

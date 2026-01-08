@@ -1,31 +1,21 @@
-import os
-import json
 from openai import OpenAI
+import json
+import os
 
-# -----------------------------
-# OpenAI client
-# -----------------------------
-client = OpenAI(
-    api_key=os.getenv("OPENAI_API_KEY")
-)
+client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
-# -----------------------------
-# System prompt (VERY IMPORTANT)
-# -----------------------------
 SYSTEM_PROMPT = """
 You are a GIS intent parser.
-
-Convert a user question into a strict JSON object with this schema ONLY:
+Return ONLY valid JSON in this schema:
 
 {
-  "layers": ["rivers", "waterbodies", "counties"],
-  "operation": "visualize | buffer_intersection",
-  "location": "Florida or county name"
+  "layers": ["rivers", "counties"],
+  "operation": "visualize",
+  "location": "Florida"
 }
 
 Rules:
-- Use only layer names from: rivers, waterbodies, counties
-- Return ONLY valid JSON
+- Allowed layers: rivers, counties
 - No explanations
 """
 
@@ -41,14 +31,3 @@ def generate_intent(user_text):
 
     content = response.choices[0].message.content
     return json.loads(content)
-
-if __name__ == "__main__":
-    user_query = input("Ask a GIS question: ")
-
-    intent = generate_intent(user_query)
-
-    with open("backend/intent.json", "w") as f:
-        json.dump(intent, f, indent=2)
-
-    print("\n✅ intent.json generated:")
-    print(json.dumps(intent, indent=2))
