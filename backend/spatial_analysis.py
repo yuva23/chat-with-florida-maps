@@ -5,9 +5,7 @@ DATA_DIR = Path("data")
 OUTPUT_DIR = Path("output")
 OUTPUT_DIR.mkdir(exist_ok=True)
 
-# -----------------------------
-# Load data
-# -----------------------------
+
 counties = gpd.read_file(DATA_DIR / "counties.geojson")
 rivers = gpd.read_file(DATA_DIR / "rivers.geojson")
 
@@ -18,9 +16,7 @@ if counties.crs.is_geographic:
 if rivers.crs.is_geographic:
     rivers = rivers.to_crs(epsg=3857)
 
-# -----------------------------
-# Spatial operation
-# -----------------------------
+
 print("Buffering rivers (1000 meters)...")
 rivers_buffer = rivers.buffer(1000)
 
@@ -36,9 +32,7 @@ affected_counties = gpd.overlay(
     how="intersection"
 )
 
-# -----------------------------
-# Save result
-# -----------------------------
+
 output_file = OUTPUT_DIR / "counties_near_rivers.geojson"
 affected_counties.to_file(output_file, driver="GeoJSON")
 

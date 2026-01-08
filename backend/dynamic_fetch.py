@@ -2,9 +2,7 @@ import json
 import subprocess
 from pathlib import Path
 
-# -----------------------------
-# Load AI intent output
-# -----------------------------
+
 INTENT_FILE = "backend/intent.json"
 LAYER_CATALOG = "backend/layer_catalog.json"
 
